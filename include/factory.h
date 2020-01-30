@@ -105,7 +105,7 @@ void create_chunk_mesh(Mesh* mesh, Chunk* chunk, const uint32_t* metadata, size_
     }
 
     // TO-DO: Add configuration to mesh generation
-    mesh_create(mesh, vertices.data, vertices.size, NULL, 0);
+    mesh_create(mesh, (Vertex*) vertices.data, vertices.size, NULL, 0);
     array_delete(&vertices);
 }
 

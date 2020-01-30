@@ -1,6 +1,6 @@
-# Metacraft - A C-based Minecraft Clone
+# render-farm
 
-A C-based Minecraft clone written in OpenGL utilizing advanced rendering techniques such as PBR shading, environment mapping and deferred rendering.
+An engine boilerplate for all the stupid shit I pull.
 
 ## Getting Started
 

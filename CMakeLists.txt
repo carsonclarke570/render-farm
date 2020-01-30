@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13)
+cmake_minimum_required(VERSION 3.12)
 project(Daybreak)
 
 # OpenGL
@@ -13,16 +13,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/libs/glfw)
 # glad
 add_subdirectory(${PROJECT_SOURCE_DIR}/libs/glad)
 
-# Compile settings
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++11")
-    if(NOT WIN32)
-        set(GLAD_LIBRARIES dl)
-    endif()
-endif()
-
 # Includes
 include_directories(
         ${PROJECT_SOURCE_DIR}/include/
@@ -33,12 +23,9 @@ include_directories(
 )
 
 # Sources
-file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include/*.h
-                  ${PROJECT_SOURCE_DIR}/libs/stb/include/*.h)
-file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.c)
-file(GLOB_RECURSE SHADERS ${PROJECT_SOURCE_DIR}/res/shaders/*.frag
-                  ${PROJECT_SOURCE_DIR}/res/shaders/*.geom
-                  ${PROJECT_SOURCE_DIR}/res/shaders/*.vert)
+file(GLOB_RECURSE HEADERS ${PROJECT_SOURCE_DIR}/include/*.h ${PROJECT_SOURCE_DIR}/libs/stb/include/*.h)
+file(GLOB_RECURSE SOURCES ${PROJECT_SOURCE_DIR}/src/*.c ${PROJECT_SOURCE_DIR}/src/*.cpp)
+file(GLOB_RECURSE SHADERS ${PROJECT_SOURCE_DIR}/res/shaders/*.frag ${PROJECT_SOURCE_DIR}/res/shaders/*.geom ${PROJECT_SOURCE_DIR}/res/shaders/*.vert)
 file(GLOB_RECURSE TEXTURES ${PROJECT_SOURCE_DIR}/res/textures/*.png)
 file(GLOB_RECURSE MODELS ${PROJECT_SOURCE_DIR}/res/models/*.obj)
 
@@ -55,7 +42,7 @@ add_definitions(
         -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"
 )
 
-add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.c)
+add_executable(${PROJECT_NAME} ${HEADERS} ${SOURCES} src/main.cpp)
 
 target_link_libraries(${PROJECT_NAME}
         glfw

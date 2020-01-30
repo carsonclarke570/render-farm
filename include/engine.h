@@ -19,24 +19,16 @@
 
 #include <stdio.h>
 
-#include <glad/glad.h>
+class Game;
 
-#include <input.h>
-#include <window.h>
-
-typedef struct st_game {
-    Window window;
-    Input input;
-    void (*init)(struct st_game* game);
-    void (*update)(struct st_game* game, double delta);
-    void (*render)(struct st_game* game, double delta);
-    void (*cleanup)();
-} Game;
+#include "game.h"
 
 /**
- * Initializes the engine.
+ *  Initializes the engine.
+ * 
+ *  @param game     Game to initialize.
  */
-int engine_init();
+int engine_init(Game* game);
 
 /**
  * Runs the engine on Game structure containing the logic and rendering
