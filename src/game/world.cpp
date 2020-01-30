@@ -15,26 +15,52 @@
 */
 
 #include "world.h"
+#include "mcubes.h"
 
 extern TexturePool texture_pool;
+
+Mesh* mcube_mesh; 
+uint8_t map[4][4][4] = {
+    {
+        {1, 0, 0, 1},
+        {0, 0, 0, 0},
+        {0, 0, 0, 0},
+        {1, 0, 0, 1},
+    },
+    {
+        {0, 0, 0, 0},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {0, 0, 0, 0},
+    },
+    {
+        {1, 0, 0, 1},
+        {0, 1, 1, 0},
+        {0, 1, 1, 0},
+        {1, 0, 0, 1},
+    },
+    {
+        {0, 0, 0, 0},
+        {1, 0, 0, 1},
+        {1, 0, 0, 1},
+        {0, 0, 0, 0},
+    },
+};
 
 void world_init(World* world, Game* game) {
     fprintf(stdout, "\nWORLD: Loading Resources...\n");
 
-    // CHUNK STUFF
-//    chunk_allocate(&world->chunk);
-//    uint32_t temp = (FACE_EAST | FACE_WEST | FACE_UP | FACE_DOWN | FACE_SOUTH | FACE_NORTH) << 24u;
-//    uint32_t faces[8] = {
-//            temp | (7u << 8u) | 7u,
-//            temp | (7u << 8u) | 8u,
-//            temp | (8u << 8u) | 8u,
-//            temp | (8u << 8u) | 7u,
-//            temp | (1u << 16u) | (0u << 8u) | 0u,
-//            temp | (1u << 16u) | (15u << 8u) | 0u,
-//            temp | (1u << 16u) | (0u << 8u) | 15u,
-//            temp | (1u << 16u) | (15u << 8u) | 15u
-//    };
-//    chunk_mesh(&world->chunk, &world->chunk_mesh, faces, 8, 48);
+    fprintf(stdout, "WORLD: Generating marching cubes...\n");
+    Grid* grid = new Grid(4, 4, 4);
+    for (int x = 0; x < grid->x_len; x++) {
+        for (int y = 0; y < grid->y_len; y++) {
+            memcpy(grid->m_cells[x][y], map[x][y], 4);
+        }
+    }
+    mcube_mesh = MarchingCubeGenerator::generate(grid, 4);
+    delete grid;
+    fprintf(stdout, "WORLD: Generated marching cubes\n");
+
     mesh_cube(&world->chunk_mesh);
 
     // CUBE
@@ -196,7 +222,7 @@ void world_scene(World* world) {
 
     transform_to_matrix(&world->cube_t, mat);
     uniform_buffer_store(&world->mvp_mat, 0, sizeof(mat4), mat);
-    mesh_render(&world->test_cube);
+    mesh_render(mcube_mesh);
 }
 
 void world_geometry_pass(World* world) {
