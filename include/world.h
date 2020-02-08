@@ -20,20 +20,19 @@
 #include <GLFW/glfw3.h>
 
 #include <camera.h>
-#include <chunk.h>
 #include <day_cycle.h>
 #include <engine.h>
 #include <framebuffer.h>
 #include <cubemap.h>
+#include <mesh.h>
 #include <transform.h>
 #include <uniform_buffer.h>
 
 #define N_DEBUG 0
 
 typedef struct {
-    // Scene materials
+    // Key rendering components DO NOT TOUCH
     Camera camera;
-
     UniformBuffer mvp_mat;
     Framebuffer g_buffer;
     Mesh frame;
@@ -48,14 +47,7 @@ typedef struct {
     Shader normal_shader;
 #endif
 
-    // Test materials
-    Chunk chunk;
-
     mat4 model_matrix;
-
-    // Chunk
-    Mesh chunk_mesh;
-    Transform chunk_t;
 
     // Test Cube
     Mesh test_cube;
