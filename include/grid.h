@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Carson Clarke-Magrab
+    Copyright 2020 Carson Clarke-Magrab
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,8 +13,32 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-//
-// Created by birdi on 6/21/2019.
-//
+#ifndef GRID_H
+#define GRID_H
 
-#include "factory.h"
+#include <stdint.h>
+
+
+struct Grid {
+    uint8_t *cells;
+    int x, y, z;
+
+    /**
+     *  Constructs a new Grid struct
+     * 
+     *  @param x   Size of the x dimension
+     *  @param y   Size of the y dimension
+     *  @param z   Size of the z dimension
+     */
+    Grid(int x, int y, int z);
+
+    /**
+     *  Destroys a Grid struct
+     */
+    ~Grid();
+};
+
+
+#endif
+
+

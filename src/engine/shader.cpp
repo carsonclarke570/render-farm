@@ -19,20 +19,22 @@
 
 extern const char *texture_type_map[4];
 
-void shader_create(Shader *shader) {
-    shader->program = 0;
-    shader->shaders[VERTEX] = 0;
-    shader->shaders[FRAGMENT] = 0;
-    shader->shaders[GEOMETRY] = 0;
-    shader->shaders[COMPUTE] = 0;
+std::stack<Shader*> Shader::m_shader_stack = std::stack<Shader*>();
+
+Shader::Shader() {
+    this->program = 0;
+    this->shaders[VERTEX] = 0;
+    this->shaders[FRAGMENT] = 0;
+    this->shaders[GEOMETRY] = 0;
+    this->shaders[COMPUTE] = 0;
 }
 
-void shader_delete(Shader *shader) {
-    glDeleteProgram(shader->program);
-    shader->program = 0;
+Shader::~Shader() {
+    glDeleteProgram(this->program);
+    this->program = 0;
 }
 
-int shader_load_text(Shader *shader, enum ShaderType type, const char *src) {
+int Shader::load_text(enum ShaderType type, const char *src) {
     // Create shader
     GLenum gl_type;
     switch(type) {
@@ -76,11 +78,11 @@ int shader_load_text(Shader *shader, enum ShaderType type, const char *src) {
         return CODE_SHADER_COMPILE_ERROR;
     }
 
-    shader->shaders[type] = gl_shader;
+    this->shaders[type] = gl_shader;
     return CODE_SUCCESS;
 }
 
-int shader_load_file(Shader* shader, enum ShaderType type, const char* file) {
+int Shader::load_file(enum ShaderType type, const char* file) {
     FILE* fp = fopen(file, "rb");
     if (!fp) {
         fprintf(stderr, "ERROR: Failed to open file %s\n", file);
@@ -95,88 +97,103 @@ int shader_load_file(Shader* shader, enum ShaderType type, const char* file) {
     data[size] = 0;
     fclose(fp);
 
-    int error_code = shader_load_text(shader, type, data);
+    int error_code = this->load_text(type, data);
     free(data);
     return error_code;
 }
 
-int shader_compile(Shader* shader) {
+int Shader::compile() {
     // Create and attach shaders
-    shader->program = glCreateProgram();
+    this->program = glCreateProgram();
     for (int i = 0; i < 4; i ++) {
-        if (shader->shaders[i]) {
-            glAttachShader(shader->program, shader->shaders[i]);
+        if (this->shaders[i]) {
+            glAttachShader(this->program, this->shaders[i]);
         }
     }
 
     // Link
     int32_t status;
-    glLinkProgram(shader->program);
-    glGetProgramiv(shader->program, GL_LINK_STATUS, &status);
+    glLinkProgram(this->program);
+    glGetProgramiv(this->program, GL_LINK_STATUS, &status);
     if (!status) {
         // Get error and print
         int32_t log_size;
-        glGetProgramiv(shader->program, GL_INFO_LOG_LENGTH, &log_size);
+        glGetProgramiv(this->program, GL_INFO_LOG_LENGTH, &log_size);
         char* log = (char*) malloc(log_size * sizeof(char));
-        glGetProgramInfoLog(shader->program, log_size, NULL, log);
+        glGetProgramInfoLog(this->program, log_size, NULL, log);
         fprintf(stderr, "ERROR: Failed to link shader! Message follows:\n%s", log);
 
         // Clean up
         free(log);
-        glDeleteProgram(shader->program);
+        glDeleteProgram(this->program);
 
         //return code
         return CODE_SHADER_LINK_ERROR;
     }
 
     for (int i = 0; i < 4; i ++) {
-        if (shader->shaders[i]) {
-            glDetachShader(shader->program, shader->shaders[i]);
-            glDeleteShader(shader->shaders[i]);
+        if (this->shaders[i]) {
+            glDetachShader(this->program, this->shaders[i]);
+            glDeleteShader(this->shaders[i]);
         }
     }
     return CODE_SUCCESS;
 }
 
-void shader_uniform_mat4(Shader* shader, const char* name, const mat4 data) {
-    GLuint loc = glGetUniformLocation(shader->program, name);
+void Shader::uniform_mat4(const char* name, const mat4 data) {
+    GLuint loc = glGetUniformLocation(this->program, name);
     glUniformMatrix4fv(loc, 1, GL_FALSE, data);
 }
 
-void shader_uniform_vec2(Shader* shader, const char* name, const vec2 data) {
-    GLuint loc = glGetUniformLocation(shader->program, name);
+void Shader::uniform_vec2(const char* name, const vec2 data) {
+    GLuint loc = glGetUniformLocation(this->program, name);
     glUniform2fv(loc, 1, data);
 }
 
-void shader_uniform_vec3(Shader* shader, const char* name, const vec3 data) {
-    GLuint loc = glGetUniformLocation(shader->program, name);
+void Shader::uniform_vec3(const char* name, const vec3 data) {
+    GLuint loc = glGetUniformLocation(this->program, name);
     glUniform3fv(loc, 1, data);
 }
 
-void shader_uniform_float(Shader* shader, const char* name, float data) {
-    GLuint loc = glGetUniformLocation(shader->program, name);
+void Shader::uniform_float(const char* name, float data) {
+    GLuint loc = glGetUniformLocation(this->program, name);
     glUniform1f(loc, data);
 }
 
-void shader_uniform_int(Shader* shader, const char* name, int data) {
-    GLuint loc = glGetUniformLocation(shader->program, name);
+void Shader::uniform_int(const char* name, int data) {
+    GLuint loc = glGetUniformLocation(this->program, name);
     glUniform1i(loc, data);
 }
 
-void shader_bind_ubo(Shader* shader, const char* name, uint32_t slot) {
-    GLuint loc = glGetUniformBlockIndex(shader->program, name);
-    glUniformBlockBinding(shader->program, loc, slot);
+void Shader::bind_ubo(const char* name, uint32_t slot) {
+    GLuint loc = glGetUniformBlockIndex(this->program, name);
+    glUniformBlockBinding(this->program, loc, slot);
 }
 
-void register_texture(Shader *shader, Texture *texture, unsigned int slot) {
+void Shader::register_texture(Texture *texture, unsigned int slot) {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glUniform1i(glGetUniformLocation(shader->program, texture_type_map[texture->type]), slot);
+    glUniform1i(glGetUniformLocation(this->program, texture_type_map[texture->type]), slot);
 }
 
-void shader_bind(Shader *shader) {
-    glUseProgram(shader->program);
+void Shader::bind() {
+    glUseProgram(this->program);
 }
 
-void shader_unbind() {
+void Shader::unbind() {
     glUseProgram(0);
+}
+
+void Shader::push(Shader* shader) {
+    m_shader_stack.push(shader);
+    shader->bind();
+}
+
+void Shader::pop() {
+    if (m_shader_stack.empty()) 
+        glUseProgram(0);
+
+    Shader* shader = m_shader_stack.top();
+    m_shader_stack.pop();
+
+    shader->bind();
 }

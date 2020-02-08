@@ -18,25 +18,8 @@
 #define MARCHING_CUBES_H
 
 #include "mesh.h"
+#include "grid.h"
 
-struct Grid {
-    uint8_t *cells;
-    int x, y, z;
-
-    /**
-     *  Constructs a new Grid struct
-     * 
-     *  @param x   Size of the x dimension
-     *  @param y   Size of the y dimension
-     *  @param z   Size of the z dimension
-     */
-    Grid(int x, int y, int z);
-
-    /**
-     *  Destroys a Grid struct
-     */
-    ~Grid();
-};
 
 class MarchingCubeGenerator {
 public:
