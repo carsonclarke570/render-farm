@@ -83,7 +83,7 @@ int GameOfLife::wrap_bounds(int n, int max) {
     if (n == max) {
         return 0;
     } 
-    if (n = -1) {
+    if (n == -1) {
         return max - 1;
     }
     return n;

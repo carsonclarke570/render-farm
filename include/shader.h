@@ -26,7 +26,6 @@
 #include <glad/glad.h>
 
 #include <common.h>
-#include <light.h>
 #include <matrix.h>
 #include <texture.h>
 

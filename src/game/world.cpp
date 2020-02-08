@@ -47,7 +47,6 @@ uint8_t map[4][4][4] = {
     },
 };
 
-uint16_t rule = (0 << 12) | (15 << 8) | (1 << 4) | 1;
 double life_time = 0.0f;
 
 void world_init(World* world, Game* game) {
@@ -61,11 +60,11 @@ void world_init(World* world, Game* game) {
     //         memcpy(grid->m_cells[x][y], map[x][y], 4);
     //     }
     // }
-    world->life = new GameOfLife(10, 10, 10);
-    world->life->populate(10);
+    world->life = new GameOfLife(20, 20, 20);
+    world->life->populate(30);
     world->life->step();
 
-    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 10);
+    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
     fprintf(stdout, "WORLD: \t\tGenerated marching cubes\n");
 
     // TEXTURES
@@ -212,12 +211,12 @@ void world_update(World* world, Game* game, double delta) {
 
     life_time += delta;
     if (life_time >= 1.0f) {
-        printf("%f ", life_time);
+        //printf("%f ", life_time);
         life_time -= 1.0f;
         world->life->step();
 
         mesh_delete(mcube_mesh);
-        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 10);
+        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
     }
 
     quat q;

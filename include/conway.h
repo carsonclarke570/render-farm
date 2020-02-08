@@ -21,10 +21,10 @@
 
 #include "grid.h"
 
-#define CONWAY_SURVIVE_LOW  (0)
-#define CONWAY_SURVIVE_HIGH (26)
-#define CONWAY_BIRTH_LOW    (1)
-#define CONWAY_BIRTH_HIGH   (26)
+#define CONWAY_SURVIVE_LOW  (5)
+#define CONWAY_SURVIVE_HIGH (7)
+#define CONWAY_BIRTH_LOW    (6)
+#define CONWAY_BIRTH_HIGH   (6)
 
 class GameOfLife {
 private:
