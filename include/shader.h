@@ -18,6 +18,7 @@
 #define _SHADER_H_
 
 #include <stack>
+#include <string>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,7 @@
 #include <glad/glad.h>
 
 #include <common.h>
+#include <light.h>
 #include <matrix.h>
 #include <texture.h>
 
@@ -76,43 +78,15 @@ public:
     int compile();
 
     /**
-     * Updates a shader's mat4 uniform.
+     * Updates a shader's uniform.
      *
      * @param name      Name of uniform to update.
-     * @param data      mat4 data to update with.
+     * @param data      data to update with.
      */
     void uniform_mat4(const char* name, const mat4 data);
-
-    /**
-     * Updates a shader's vec2 uniform.
-     *
-     * @param name      Name of uniform to update.
-     * @param data      vec2 data to update with.
-     */
     void uniform_vec2(const char* name, const vec2 data);
-
-    /**
-     * Updates a shader's vec3 uniform.
-     *
-     * @param name      Name of uniform to update.
-     * @param data      vec3 data to update with.
-     */
     void uniform_vec3(const char* name, const vec3 data);
-
-    /**
-     * Updates a shader's float uniform.
-     *
-     * @param name      Name of uniform to update.
-     * @param data      float data to update with.
-     */
     void uniform_float(const char* name, float data);
-
-    /**
-     * Updates a shader's int uniform.
-     *
-     * @param name      Name of uniform to update.
-     * @param data      int data to update with.
-     */
     void uniform_int(const char* name, int data);
 
     /**

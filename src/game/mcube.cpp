@@ -27,7 +27,6 @@ Mesh* MarchingCubeGenerator::generate(Grid* cells, int n) {
     vec3 norm, q, r;
 
     int upper = n - 1;
-    int n2 = n * n;
     for (int z = 0; z < upper; z++) {
         for (int y = 0; y < upper; y++) {
             for (int x = 0; x < upper; x++) {
@@ -65,9 +64,9 @@ Mesh* MarchingCubeGenerator::generate(Grid* cells, int n) {
                         memcpy(v1.normal, norm, sizeof(vec3));
                         memcpy(v2.normal, norm, sizeof(vec3));
 
-                        vertices.push_back(v0);
-                        vertices.push_back(v1);
                         vertices.push_back(v2);
+                        vertices.push_back(v1);
+                        vertices.push_back(v0);
                     }
                 }
             }
