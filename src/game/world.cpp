@@ -50,6 +50,7 @@ uint8_t map[4][4][4] = {
 void world_init(World* world, Game* game) {
     fprintf(stdout, "\nWORLD: Loading Resources...\n");
 
+    /* Marching Cubes */
     fprintf(stdout, "WORLD: Generating marching cubes...\n");
     Grid* grid = new Grid(4, 4, 4);
     for (int x = 0; x < grid->x_len; x++) {
@@ -60,8 +61,6 @@ void world_init(World* world, Game* game) {
     mcube_mesh = MarchingCubeGenerator::generate(grid, 4);
     delete grid;
     fprintf(stdout, "WORLD: Generated marching cubes\n");
-
-    mesh_cube(&world->chunk_mesh);
 
     // CUBE
     mesh_cube(&world->test_cube);
@@ -164,11 +163,6 @@ void world_init(World* world, Game* game) {
     uniform_buffer_store(&world->mvp_mat, sizeof(mat4), sizeof(mat4), v_mat);
 
     // TRANSFORM
-    transform_default(&world->chunk_t);
-    world->chunk_t.translation[0] = 5.0f;
-    world->chunk_t.translation[1] = -2.5f;
-    world->chunk_t.translation[2] = -10.0f;
-
     transform_default(&world->cube_t);
     world->cube_t.translation[0] = -5.0f;
     world->cube_t.translation[2] = -10.0f;
@@ -207,14 +201,6 @@ void world_render(World* world, Game* game, double delta) {
 
 void world_scene(World* world) {
     mat4 mat;
-
-    bind_texture(&texture_pool.textures[3], 5);
-    bind_texture(&texture_pool.textures[4], 6);
-    bind_texture(&texture_pool.textures[5], 7);
-
-    transform_to_matrix(&world->chunk_t, mat);
-    uniform_buffer_store(&world->mvp_mat, 0, sizeof(mat4), mat);
-    mesh_render(&world->chunk_mesh);
 
     bind_texture(&texture_pool.textures[0], 5);
     bind_texture(&texture_pool.textures[1], 6);
@@ -263,7 +249,6 @@ void world_sky_pass(World* world) {
 
 void world_delete(World* world) {
     // Clean up
-    chunk_delete(&world->chunk);
     cubemap_delete(&world->sky_box);
 
     //Shaders
@@ -272,9 +257,9 @@ void world_delete(World* world) {
     shader_delete((&world->geometry));
 
     // Meshes
-    mesh_delete(&world->chunk_mesh);
     mesh_delete(&world->test_cube);
     mesh_delete(&world->frame);
+    mesh_delete(mcube_mesh);
 
     // Framebuffers
     framebuffer_delete(&world->g_buffer);
