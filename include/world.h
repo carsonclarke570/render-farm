@@ -20,6 +20,7 @@
 #include <GLFW/glfw3.h>
 
 #include <camera.h>
+#include "conway.h"
 #include <day_cycle.h>
 #include <engine.h>
 #include <framebuffer.h>
@@ -54,6 +55,9 @@ typedef struct {
     // Test Cube
     Mesh test_cube;
     Transform cube_t;
+
+    // Conway
+    GameOfLife* life; 
 
 } World;
 

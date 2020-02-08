@@ -47,19 +47,24 @@ uint8_t map[4][4][4] = {
     },
 };
 
+double life_time = 0.0f;
+
 void world_init(World* world, Game* game) {
     fprintf(stdout, "\nWORLD: Loading resources...\n");
 
     /* Marching Cubes */
     fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
-    Grid* grid = new Grid(4, 4, 4);
-    for (int x = 0; x < grid->x_len; x++) {
-        for (int y = 0; y < grid->y_len; y++) {
-            memcpy(grid->m_cells[x][y], map[x][y], 4);
-        }
-    }
-    mcube_mesh = MarchingCubeGenerator::generate(grid, 4);
-    delete grid;
+    // Grid* grid = new Grid(10, 10, 10);
+    // for (int x = 0; x < grid->x_len; x++) {
+    //     for (int y = 0; y < grid->y_len; y++) {
+    //         memcpy(grid->m_cells[x][y], map[x][y], 4);
+    //     }
+    // }
+    world->life = new GameOfLife(20, 20, 20);
+    world->life->populate(30);
+    world->life->step();
+
+    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
     fprintf(stdout, "WORLD: \t\tGenerated marching cubes\n");
 
     // TEXTURES
@@ -127,8 +132,8 @@ void world_init(World* world, Game* game) {
     /* Day/Night Cycle COnfiguration*/
     const vec3 day_sky = {0.0, 0.0, 1.0};
     const vec3 day_hor = {0.32, 0.92, 1.0};
-    const vec3 night_sky = {0.1, 0.1, 0.1};
-    const vec3 night_hor = {0.1, 0.1, 0.1};
+    const vec3 night_sky = {0.0, 0.0, 1.0};
+    const vec3 night_hor = {0.32, 0.92, 1.0};
     world->day_cycle.time = 0.0f;
     world->day_cycle.lerp = 0.0f;
 
@@ -201,7 +206,18 @@ void world_update(World* world, Game* game, double delta) {
     day_update(&world->day_cycle, delta);
 
     /* OTHER UPDATES */
-    float s = sinf(glfwGetTime() / 2.0f);
+    float t = glfwGetTime();
+    float s = sinf(t / 2.0f);
+
+    life_time += delta;
+    if (life_time >= 1.0f) {
+        //printf("%f ", life_time);
+        life_time -= 1.0f;
+        world->life->step();
+
+        mesh_delete(mcube_mesh);
+        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
+    }
 
     quat q;
     vec3 axis = {0.0f, 1.0f, 0.0f};
@@ -227,11 +243,11 @@ void world_scene(World* world) {
     bind_texture(&texture_pool.textures[1], 6);
     bind_texture(&texture_pool.textures[2], 7);
 
-    //Shader::push(&world->island);
+    Shader::push(&world->island);
     transform_to_matrix(&world->cube_t, mat);
     uniform_buffer_store(&world->mvp_mat, 0, sizeof(mat4), mat);
     mesh_render(mcube_mesh);
-    //Shader::pop();
+    Shader::pop();
 }
 
 void world_geometry_pass(World* world) {
@@ -243,7 +259,7 @@ void world_geometry_pass(World* world) {
     get_view(&world->camera, view);
     uniform_buffer_store(&world->mvp_mat, sizeof(mat4), sizeof(mat4), view);
 
-    Shader::push(&world->island);
+    Shader::push(&world->geometry);
     world_scene(world);
     Shader::pop();
 
@@ -286,6 +302,9 @@ void world_delete(World* world) {
     texture_delete(&texture_pool.textures[0]);
     texture_delete(&texture_pool.textures[1]);
     texture_delete(&texture_pool.textures[2]);
+
+    // Conway
+    delete world->life;
 
     // Global cleanup
     texture_pool_delete();

@@ -68,7 +68,7 @@ void main() {
     vec3 l_o = vec3(0.0f);
 
     // DIRECTIONAL LIGHT
-    vec3 h = normalize(w_o +w_i);
+    vec3 h = normalize(w_o + w_i);
     vec3 radiance = diffuse;
 
     // BRDF
@@ -81,7 +81,7 @@ void main() {
 
     vec3 specular = (D * G * F) / max(4.0f * max(dot(normal, w_o), 0.0) * max(dot(normal, w_i), 0.0), EPSILON);
     float cos_theta = max(dot(normal, w_i), 0.0f);
-    l_o += (kd * albedo / PI + specular) * radiance * cos_theta;
+    l_o += (((kd * albedo) / PI) + specular) * radiance * cos_theta;
 
     // OTHER LIGHTS
 
