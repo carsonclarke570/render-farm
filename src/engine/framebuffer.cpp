@@ -92,11 +92,12 @@ void framebuffer_unbind() {
 
 
 void framebuffer_bind_textures(Framebuffer* buffer, Shader* shader) {
-    shader_bind(shader);
+    Shader::push(shader);
     for (int i = 0; i < buffer->n; i++) {
         glActiveTexture(GL_TEXTURE0 + i);
         glBindTexture(GL_TEXTURE_2D, buffer->textures[i]);
     }
+    Shader::pop();
 }
 
 

@@ -65,6 +65,6 @@ void day_update(DayCycle* cycle, float delta) {
 }
 
 void day_shader_update(DayCycle* cycle, Shader* shader) {
-    shader_uniform_vec3(shader, "direction", cycle->sun_position);
-    shader_uniform_vec3(shader, "diffuse", cycle->sunlight);
+    shader->uniform_vec3("direction", cycle->sun_position);
+    shader->uniform_vec3("diffuse", cycle->sunlight);
 }
