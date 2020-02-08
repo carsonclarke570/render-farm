@@ -20,17 +20,17 @@
 #include "mesh.h"
 
 struct Grid {
-    uint8_t*** m_cells;
-    int x_len, y_len, z_len;
+    uint8_t *cells;
+    int x, y, z;
 
     /**
      *  Constructs a new Grid struct
      * 
-     *  @param xn   Size of the x dimension
-     *  @param yn   Size of the y dimension
-     *  @param zn   Size of the z dimension
+     *  @param x   Size of the x dimension
+     *  @param y   Size of the y dimension
+     *  @param z   Size of the z dimension
      */
-    Grid(int xn, int yn, int zn);
+    Grid(int x, int y, int z);
 
     /**
      *  Destroys a Grid struct
@@ -44,12 +44,11 @@ public:
      *  Uses the marching cube algorithm to convert a three-dimensional array
      *  of boolean cells into a mesh.
      * 
-     *  @params cells   A three-dimensional array of cells
-     *  @params n       The length of the height, width and length of the array
+     *  @params cells   A Grid object defining a three-dimensional array of cells.
      * 
      *  @return A newly allocated mesh object generated from marching cubes.
      */
-    static Mesh* generate(Grid* cells, int n);
+    static Mesh* generate(Grid* cells);
 };
 
 #endif

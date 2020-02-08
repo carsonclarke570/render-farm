@@ -16,49 +16,23 @@
 
 #include "world.h"
 #include "mcubes.h"
+#include "simplex_noise.h"
 
 extern TexturePool texture_pool;
 
 Mesh* mcube_mesh; 
-uint8_t map[4][4][4] = {
-    {
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-    },
-    {
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-    },
-    {
-        {1, 0, 0, 1},
-        {0, 1, 1, 0},
-        {0, 1, 1, 0},
-        {1, 0, 0, 1},
-    },
-    {
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-    },
-};
 
 void world_init(World* world, Game* game) {
     fprintf(stdout, "\nWORLD: Loading Resources...\n");
 
-    fprintf(stdout, "WORLD: Generating marching cubes...\n");
-    Grid* grid = new Grid(4, 4, 4);
-    for (int x = 0; x < grid->x_len; x++) {
-        for (int y = 0; y < grid->y_len; y++) {
-            memcpy(grid->m_cells[x][y], map[x][y], 4);
-        }
-    }
-    mcube_mesh = MarchingCubeGenerator::generate(grid, 4);
-    delete grid;
+    fprintf(stdout, "WORLD: Generating world...\n");
+    Grid* grid = new Grid(8, 8, 8);
+	simplex_noise(grid);
+    
+	fprintf(stdout, "WORLD: Generating marching cubes...\n");
+    mcube_mesh = MarchingCubeGenerator::generate(grid);
+    
+	delete grid;
     fprintf(stdout, "WORLD: Generated marching cubes\n");
 
     mesh_cube(&world->chunk_mesh);
