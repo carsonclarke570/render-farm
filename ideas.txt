@@ -1,0 +1,2 @@
+- Stack-based shader system
+-- All functions in engine should preserve shader state

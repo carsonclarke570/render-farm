@@ -43,6 +43,8 @@ typedef struct {
     Shader sky_shader;
     Shader pbr_shader;
     Shader geometry;
+
+    Shader island;
 #if N_DEBUG
     Shader normal_shader;
 #endif

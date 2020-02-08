@@ -48,10 +48,10 @@ uint8_t map[4][4][4] = {
 };
 
 void world_init(World* world, Game* game) {
-    fprintf(stdout, "\nWORLD: Loading Resources...\n");
+    fprintf(stdout, "\nWORLD: Loading resources...\n");
 
     /* Marching Cubes */
-    fprintf(stdout, "WORLD: Generating marching cubes...\n");
+    fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
     Grid* grid = new Grid(4, 4, 4);
     for (int x = 0; x < grid->x_len; x++) {
         for (int y = 0; y < grid->y_len; y++) {
@@ -60,12 +60,10 @@ void world_init(World* world, Game* game) {
     }
     mcube_mesh = MarchingCubeGenerator::generate(grid, 4);
     delete grid;
-    fprintf(stdout, "WORLD: Generated marching cubes\n");
-
-    // CUBE
-    mesh_cube(&world->test_cube);
+    fprintf(stdout, "WORLD: \t\tGenerated marching cubes\n");
 
     // TEXTURES
+    fprintf(stdout, "WORLD: \t\tLoading textures...\n");
     texture_pool_allocate(6);
     create_texture(&texture_pool.textures[0], TEXTURE_DIFFUSE);
     create_texture(&texture_pool.textures[1], TEXTURE_NORMAL);
@@ -86,32 +84,47 @@ void world_init(World* world, Game* game) {
     texture_load(&texture_pool.textures[3], "blocks.png");
     texture_load(&texture_pool.textures[4], "blocks_n.png");
     texture_load(&texture_pool.textures[5], "blocks_s.png");
+    fprintf(stdout, "WORLD: \t\tLoaded textures\n");
 
+    fprintf(stdout, "WORLD: \t\tLoading shaders...\n");
     /* PBR Lighting Shader */
-    shader_load_file(&world->pbr_shader, VERTEX, "light.vert");
-    shader_load_file(&world->pbr_shader, FRAGMENT, "light.frag");
-    shader_compile(&world->pbr_shader);
+    world->pbr_shader.load_file(VERTEX, "light.vert");
+    world->pbr_shader.load_file(FRAGMENT, "light.frag");
+    world->pbr_shader.compile();
 
-    shader_bind(&world->pbr_shader);
-    shader_uniform_int(&world->pbr_shader, "buf_position", 0);
-    shader_uniform_int(&world->pbr_shader, "buf_normal", 1);
-    shader_uniform_int(&world->pbr_shader, "buf_albedo", 2);
-    shader_unbind();
+     /* Geometry Pass Shader */
+    world->geometry.load_file(VERTEX, "geometry.vert");
+    world->geometry.load_file(FRAGMENT, "geometry.frag");
+    world->geometry.compile();
 
-    /* Geometry Pass Shader */
-    shader_load_file(&world->geometry, VERTEX, "geometry.vert");
-    shader_load_file(&world->geometry, FRAGMENT, "geometry.frag");
-    shader_compile(&world->geometry);
+    /* Skybox Shader */
+    world->sky_shader.load_file(VERTEX, "skybox.vert");
+    world->sky_shader.load_file(FRAGMENT, "skybox.frag");
+    world->sky_shader.compile();
+
+    /* Island Shader */
+    world->island.load_file(VERTEX, "island.vert");
+    world->island.load_file(FRAGMENT, "island.frag");
+    world->island.compile();
+    fprintf(stdout, "WORLD: \t\tLoaded shaders\n");
+
+    fprintf(stdout, "WORLD: \t\tConfiguring shaders...\n");
+    /* PBR Shader Configuration */
+    world->pbr_shader.bind();
+    world->pbr_shader.uniform_int("buf_position", 0);
+    world->pbr_shader.uniform_int("buf_normal", 1);
+    world->pbr_shader.uniform_int("buf_albedo", 2);
+    world->pbr_shader.unbind();
 
     /* Geometry Pass Configuration */
-    shader_bind(&world->geometry);
-    shader_bind_ubo(&world->geometry, "mvp_mat", 0);
-    register_texture(&world->geometry, &texture_pool.textures[3], 5);
-    register_texture(&world->geometry, &texture_pool.textures[4], 6);
-    register_texture(&world->geometry, &texture_pool.textures[5], 7);
-    shader_unbind();
+    world->geometry.bind();
+    world->geometry.bind_ubo("mvp_mat", 0);
+    world->geometry.register_texture(&texture_pool.textures[3], 5);
+    world->geometry.register_texture(&texture_pool.textures[4], 6);
+    world->geometry.register_texture(&texture_pool.textures[5], 7);
+    world->pbr_shader.unbind();
 
-    /* Day/Night Cycle */
+    /* Day/Night Cycle COnfiguration*/
     const vec3 day_sky = {0.0, 0.0, 1.0};
     const vec3 day_hor = {0.32, 0.92, 1.0};
     const vec3 night_sky = {0.1, 0.1, 0.1};
@@ -119,19 +132,25 @@ void world_init(World* world, Game* game) {
     world->day_cycle.time = 0.0f;
     world->day_cycle.lerp = 0.0f;
 
-    /* Skybox Shader + Configuration */
-    shader_load_file(&world->sky_shader, VERTEX, "skybox.vert");
-    shader_load_file(&world->sky_shader, FRAGMENT, "skybox.frag");
-    shader_compile(&world->sky_shader);
+    world->sky_shader.bind();
+    world->sky_shader.uniform_vec3("day_sky", day_sky);
+    world->sky_shader.uniform_vec3("day_hor", day_hor);
+    world->sky_shader.uniform_vec3("night_sky", night_sky);
+    world->sky_shader.uniform_vec3("night_hor", night_hor);
+    world->sky_shader.bind_ubo("mvp_mat", 0);
+    world->sky_shader.unbind();
 
-    shader_bind(&world->sky_shader);
-    shader_uniform_vec3(&world->sky_shader, "day_sky", day_sky);
-    shader_uniform_vec3(&world->sky_shader, "day_hor", day_hor);
-    shader_uniform_vec3(&world->sky_shader, "night_sky", night_sky);
-    shader_uniform_vec3(&world->sky_shader, "night_hor", night_hor);
-    shader_bind_ubo(&world->sky_shader, "mvp_mat", 0);
-    shader_unbind();
+    /* Island Shader Configuration */
+    const vec3 top = {1.0f, 1.0f, 1.0f};
+    const vec3 bottom = {0.0f, 0.0f, 0.0f};
+    world->island.bind();
+    world->island.uniform_vec3("top_color", top);
+    world->island.uniform_vec3("bottom_color", bottom);
+    world->island.unbind();
 
+    fprintf(stdout, "WORLD: \t\tConfigured shaders\n");
+
+    // Create Skybox
     cubemap_create(&world->sky_box);
 
     /* PBR Framebuffer Creation */
@@ -148,6 +167,7 @@ void world_init(World* world, Game* game) {
     /* Screen Quad Creation */
     mesh_quad(&world->frame);
 
+    fprintf(stdout, "WORLD: \t\tConfiguring transformation matrices...\n");
     /* Model View Projection Uniform buffer */
     uniform_buffer_create(&world->mvp_mat, 3 * sizeof(mat4), 0);
     mat4 v_mat;
@@ -166,6 +186,7 @@ void world_init(World* world, Game* game) {
     transform_default(&world->cube_t);
     world->cube_t.translation[0] = -5.0f;
     world->cube_t.translation[2] = -10.0f;
+    fprintf(stdout, "WORLD: \t\tConfigured transformation matrices\n");
 
     fprintf(stdout, "WORLD: Resources loaded.\n");
 }
@@ -206,9 +227,11 @@ void world_scene(World* world) {
     bind_texture(&texture_pool.textures[1], 6);
     bind_texture(&texture_pool.textures[2], 7);
 
+    //Shader::push(&world->island);
     transform_to_matrix(&world->cube_t, mat);
     uniform_buffer_store(&world->mvp_mat, 0, sizeof(mat4), mat);
     mesh_render(mcube_mesh);
+    //Shader::pop();
 }
 
 void world_geometry_pass(World* world) {
@@ -220,9 +243,9 @@ void world_geometry_pass(World* world) {
     get_view(&world->camera, view);
     uniform_buffer_store(&world->mvp_mat, sizeof(mat4), sizeof(mat4), view);
 
-    shader_bind(&world->geometry);
+    Shader::push(&world->island);
     world_scene(world);
-    shader_unbind();
+    Shader::pop();
 
     framebuffer_unbind();
 }
@@ -230,34 +253,29 @@ void world_geometry_pass(World* world) {
 void world_lighting_pass(World* world) {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     // Ambient light
-    shader_bind(&world->pbr_shader);
+    Shader::push(&world->pbr_shader);
     framebuffer_bind_textures(&world->g_buffer, &world->pbr_shader);
-    shader_uniform_vec3(&world->pbr_shader, "eye_pos", world->camera.position);
+    world->pbr_shader.uniform_vec3("eye_pos", world->camera.position);
     day_shader_update(&world->day_cycle, &world->pbr_shader);
-    shader_bind(&world->pbr_shader);
+    //shader_bind(&world->pbr_shader);
     mesh_render(&world->frame);
+    Shader::pop();
 
     framebuffer_blit_depth(&world->g_buffer);
 }
 
 void world_sky_pass(World* world) {
-    shader_bind(&world->sky_shader);
-    shader_uniform_float(&world->sky_shader, "percent", world->day_cycle.lerp);
+    Shader::push(&world->sky_shader);
+    world->sky_shader.uniform_float("percent", world->day_cycle.lerp);
     cubemap_render(&world->sky_box, &world->sky_shader);
-    shader_unbind();
+    Shader::pop();
 }
 
 void world_delete(World* world) {
     // Clean up
     cubemap_delete(&world->sky_box);
 
-    //Shaders
-    shader_delete(&world->sky_shader);
-    shader_delete(&world->pbr_shader);
-    shader_delete((&world->geometry));
-
     // Meshes
-    mesh_delete(&world->test_cube);
     mesh_delete(&world->frame);
     mesh_delete(mcube_mesh);
 
