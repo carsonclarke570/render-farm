@@ -16,57 +16,38 @@
 
 #include "world.h"
 #include "mcubes.h"
+#include "simplex_noise.h"
+
+
+//#define CONWAY
 
 extern TexturePool texture_pool;
-
-Mesh* mcube_mesh; 
-uint8_t map[4][4][4] = {
-    {
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-    },
-    {
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-    },
-    {
-        {1, 0, 0, 1},
-        {0, 1, 1, 0},
-        {0, 1, 1, 0},
-        {1, 0, 0, 1},
-    },
-    {
-        {0, 0, 0, 0},
-        {1, 0, 0, 1},
-        {1, 0, 0, 1},
-        {0, 0, 0, 0},
-    },
-};
-
+Mesh* mcube_mesh;
 double life_time = 0.0f;
+
 
 void world_init(World* world, Game* game) {
     fprintf(stdout, "\nWORLD: Loading resources...\n");
 
     /* Marching Cubes */
-    fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
-    // Grid* grid = new Grid(10, 10, 10);
-    // for (int x = 0; x < grid->x_len; x++) {
-    //     for (int y = 0; y < grid->y_len; y++) {
-    //         memcpy(grid->m_cells[x][y], map[x][y], 4);
-    //     }
-    // }
+	fprintf(stdout, "WORLD: \t\tGenerating world...\n");
+#ifdef CONWAY
     world->life = new GameOfLife(20, 20, 20);
-    world->life->populate(30);
+    world->life->populate(40);
     world->life->step();
+#else
+    Grid* grid = new Grid(8, 8, 8);
+	simplex_noise(grid);
+#endif
 
-    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
-    fprintf(stdout, "WORLD: \t\tGenerated marching cubes\n");
-
+	fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
+#ifdef CONWAY
+    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
+#else
+	mcube_mesh = MarchingCubeGenerator::generate(grid);
+	delete grid;
+#endif
+    
     // TEXTURES
     fprintf(stdout, "WORLD: \t\tLoading textures...\n");
     texture_pool_allocate(6);
@@ -89,7 +70,6 @@ void world_init(World* world, Game* game) {
     texture_load(&texture_pool.textures[3], "blocks.png");
     texture_load(&texture_pool.textures[4], "blocks_n.png");
     texture_load(&texture_pool.textures[5], "blocks_s.png");
-    fprintf(stdout, "WORLD: \t\tLoaded textures\n");
 
     fprintf(stdout, "WORLD: \t\tLoading shaders...\n");
     /* PBR Lighting Shader */
@@ -111,7 +91,6 @@ void world_init(World* world, Game* game) {
     world->island.load_file(VERTEX, "island.vert");
     world->island.load_file(FRAGMENT, "island.frag");
     world->island.compile();
-    fprintf(stdout, "WORLD: \t\tLoaded shaders\n");
 
     fprintf(stdout, "WORLD: \t\tConfiguring shaders...\n");
     /* PBR Shader Configuration */
@@ -154,8 +133,6 @@ void world_init(World* world, Game* game) {
     world->island.uniform_vec3("bottom_color", bottom);
     world->island.unbind();
 
-    fprintf(stdout, "WORLD: \t\tConfigured shaders\n");
-
     // Create Skybox
     cubemap_create(&world->sky_box);
 
@@ -194,8 +171,6 @@ void world_init(World* world, Game* game) {
     world->cube_t.translation[0] = -5.0f;
     world->cube_t.translation[2] = -10.0f;
     fprintf(stdout, "WORLD: \t\tConfigured transformation matrices\n");
-
-    fprintf(stdout, "WORLD: Resources loaded.\n");
 }
 
 void world_update(World* world, Game* game, double delta) {
@@ -211,6 +186,7 @@ void world_update(World* world, Game* game, double delta) {
     float t = glfwGetTime();
     float s = sinf(t / 2.0f);
 
+#ifdef CONWAY
     life_time += delta;
     if (life_time >= 1.0f) {
         //printf("%f ", life_time);
@@ -218,8 +194,9 @@ void world_update(World* world, Game* game, double delta) {
         world->life->step();
 
         mesh_delete(mcube_mesh);
-        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 20);
+        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
     }
+#endif
 
     quat q;
     vec3 axis = {0.0f, 1.0f, 0.0f};

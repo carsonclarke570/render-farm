@@ -18,23 +18,34 @@
 
 #include <stdint.h>
 
+
+
+
 struct Grid {
-    uint8_t*** m_cells;
-    int x_len, y_len, z_len;
+    uint8_t *m_cells;
+    int x, y, z;
 
     /**
      *  Constructs a new Grid struct
      * 
-     *  @param xn   Size of the x dimension
-     *  @param yn   Size of the y dimension
-     *  @param zn   Size of the z dimension
+     *  @param x   Size of the x dimension
+     *  @param y   Size of the y dimension
+     *  @param z   Size of the z dimension
      */
-    Grid(int xn, int yn, int zn);
+    Grid(int x, int y, int z);
 
     /**
      *  Destroys a Grid struct
      */
     ~Grid();
+	
+	/**
+	 * Converts the xyz indicies to a single index
+	 */
+	int index(int x, int y, int z);
 };
 
+
 #endif
+
+

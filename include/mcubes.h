@@ -20,18 +20,18 @@
 #include "mesh.h"
 #include "grid.h"
 
+
 class MarchingCubeGenerator {
 public:
     /**
      *  Uses the marching cube algorithm to convert a three-dimensional array
      *  of boolean cells into a mesh.
      * 
-     *  @params cells   A three-dimensional array of cells
-     *  @params n       The length of the height, width and length of the array
+     *  @params cells   A Grid object defining a three-dimensional array of cells.
      * 
      *  @return A newly allocated mesh object generated from marching cubes.
      */
-    static Mesh* generate(Grid* cells, int n);
+    static Mesh* generate(Grid* cells);
 };
 
 #endif
