@@ -14,7 +14,7 @@
     limitations under the License.
 */
 
-#include <camera.h>
+#include "camera.h"
 
 // Helper function
 void update_vector(Camera* camera) {
@@ -58,6 +58,7 @@ void move_camera(Camera *camera, Window *window, float delta) {
     GLFWwindow* win = window->window;
 
     vec3 temp;
+    vec3 world_up = WORLD_UP;
     if (glfwGetKey(win, KEY_BIND_FORWARD) == GLFW_PRESS) {
         vec3_mulf(camera->front, velocity, temp);
         vec3_add(camera->position, temp, camera->position);
@@ -73,6 +74,14 @@ void move_camera(Camera *camera, Window *window, float delta) {
     if (glfwGetKey(win, KEY_BIND_RIGHT) == GLFW_PRESS) {
         vec3_mulf(camera->right, velocity, temp);
         vec3_add(camera->position, temp, camera->position);
+    }
+    if (glfwGetKey(win, GLFW_KEY_SPACE) == GLFW_PRESS) {
+        vec3_mulf(world_up, velocity, temp);
+        vec3_add(camera->position, temp, camera->position);
+    }
+    if (glfwGetKey(win, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+        vec3_mulf(world_up, velocity, temp);
+        vec3_sub(camera->position, temp, camera->position);
     }
 }
 

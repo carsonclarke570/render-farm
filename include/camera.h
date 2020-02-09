@@ -17,9 +17,10 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include <matrix.h>
-#include <vector.h>
-#include <window.h>
+#include "matrix.h"
+#include "vector.h"
+#include "window.h"
+#include "common.h"
 
 typedef struct Camera_t {
     // Camera attributes

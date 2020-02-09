@@ -65,15 +65,13 @@
 // Camera defaults
 #define CAMERA_YAW          -(GL_PI / 2.0f);
 #define CAMERA_PITCH        0.0f
-#define CAMERA_SPEED        2.5f
+#define CAMERA_SPEED        4.0f
 #define CAMERA_SENSITIVITY  0.005f
 
 #define KEY_BIND_FORWARD    GLFW_KEY_W
 #define KEY_BIND_BACKWARD   GLFW_KEY_S
 #define KEY_BIND_LEFT       GLFW_KEY_A
 #define KEY_BIND_RIGHT      GLFW_KEY_D
-
-#define KEY_BIND_QUIT       GLFW_KEY_ESCAPE
 
 // Chunk stuff
 #define CHUNK_HEIGHT    256
