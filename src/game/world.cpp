@@ -164,12 +164,12 @@ void world_init(World* world, Game* game) {
             {GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_TEXTURE_2D, GL_NEAREST},      // Position + metallic
             {GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_TEXTURE_2D, GL_NEAREST},      // Normal + roughness
             {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_TEXTURE_2D, GL_NEAREST},  // Color
-            //{GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_TEXTURE_2D, GL_LINEAR}
+            // {GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_TEXTURE_2D, GL_LINEAR}
     };
     ivec2  size;
     size[0] = WIN_WIDTH;
     size[1] = WIN_HEIGHT;
-    framebuffer_create(&world->g_buffer, attachments, 3, size, true);
+    framebuffer_create(&world->g_buffer, attachments, 4, size, true);
 
     /* Screen Quad Creation */
     mesh_quad(&world->frame);
