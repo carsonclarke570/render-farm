@@ -21,6 +21,7 @@
 
 #include "grid.h"
 
+
 #define CONWAY_SURVIVE_LOW  (0)
 #define CONWAY_SURVIVE_HIGH (26)
 #define CONWAY_BIRTH_LOW    (1)
@@ -28,12 +29,15 @@
 
 class GameOfLife {
 private:
-    Grid* m_next;
+    Grid *m_next;
 
     int count_neigbors(int x, int y, int z);
-    int wrap_bounds(int n, int max);
+    int wrap_bounds(int x0, int y0, int z0, int *x1, int *y1, int *z1);
 public:
-    Grid* m_current;
+    Grid *m_current;
+    int x;
+	int y;
+	int z;
 
     /**
      * Construct a new Game Of Life object
@@ -42,7 +46,7 @@ public:
      * @param y_len     Length of the y dimension
      * @param z_len     Length of the z dimension
      */
-    GameOfLife(int x_len, int y_len, int z_len);
+    GameOfLife(int x, int y, int z);
     
     /**
      * Destroy the Game Of Life object
@@ -67,4 +71,7 @@ public:
     void step();
 };
 
+
 #endif
+
+

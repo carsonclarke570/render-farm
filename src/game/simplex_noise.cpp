@@ -95,11 +95,11 @@ void simplex_noise(Grid *grid) {
 		{1, 0, 0, 1, 0, 1}, // xzy
 		{1, 0, 0, 1, 1, 0}  // xyz
 	};
-	int index = 0;
+	int c;
     
-	for (x = 0; x < grid->x; x++) {
+	for (c = 0, x = 0; x < grid->x; x++) {
 	for (y = 0; y < grid->y; y++) {
-	for (z = 0; z < grid->z; z++) {
+	for (z = 0; z < grid->z; z++, c++) {
 		
 		// Skew the input space to determine which simplex cell we're in
 		
@@ -123,11 +123,6 @@ void simplex_noise(Grid *grid) {
 		// Determine which simplex we are in.
 		
 		// Offsets for second and third corners of simplex in (i,j,k) coords.
-		int q = 
-			(x0 >= y0) << 2 |
-			(x0 >= z0) << 1 |
-			(y0 >= z0);
-		
 		ijk12 = ijk12s[
 			(x0 >= y0) << 2 |
 			(x0 >= z0) << 1 |
@@ -214,6 +209,6 @@ void simplex_noise(Grid *grid) {
 		
 		// Add contributions from each corner to get the final noise value.
 		// The result is scaled to stay just inside [-1,1]
-		grid->cells[index++] = (32.0 * (n0 + n1 + n2 + n3)) > 0;
+		grid->m_cells[c] = (32.0 * (n0 + n1 + n2 + n3)) > 0;
 	}}}
 }

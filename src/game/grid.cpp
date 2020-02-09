@@ -15,26 +15,25 @@
 */
 #include "grid.h"
 
-Grid::Grid(int xn, int yn, int zn) {
-    this->x_len = xn;
-    this->y_len = yn;
-    this->z_len = zn;
 
-    this->m_cells = new uint8_t**[xn];
-    for (int x = 0; x < xn; x++) {
-        this->m_cells[x] = new uint8_t*[yn];
-        for (int y = 0; y < yn; y++) {
-            this->m_cells[x][y] = new uint8_t[zn];
-        }
-    }
+Grid::Grid(int x, int y, int z) {
+    this->m_cells = new uint8_t[x * y * z];
+    this->x = x;
+    this->y = y;
+    this->z = z;
 }
+
 
 Grid::~Grid() {
-    for (int x = 0; x < this->x_len; x++) {
-        for (int y = 0; y < this->y_len; y++) {
-            delete[] this->m_cells[x][y];
-        }
-        delete[] this->m_cells[x];
-    }
     delete[] this->m_cells;
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
 }
+
+
+int Grid::index(int x, int y, int z) {
+	return (x * this->y * this->z) + (y * this->z) + z;
+}
+
+

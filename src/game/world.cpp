@@ -30,20 +30,18 @@ void world_init(World* world, Game* game) {
 
     /* Marching Cubes */
 	fprintf(stdout, "WORLD: \t\tGenerating world...\n");
-    Grid* grid = new Grid(8, 8, 8);
-	simplex_noise(grid);
+    //Grid* grid = new Grid(8, 8, 8);
+	//simplex_noise(grid);
 	
 	fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
-    //world->life = new GameOfLife(10, 10, 10);
-    //world->life->populate(10);
-    //world->life->step();
+    world->life = new GameOfLife(10, 10, 10);
+    world->life->populate(10);
+    world->life->step();
 
-    //mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 10);
-	mcube_mesh = MarchingCubeGenerator::generate(grid);
-	delete grid;
+    mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
+	//mcube_mesh = MarchingCubeGenerator::generate(grid);
+	//delete grid;
     
-	mesh_cube(&world->chunk_mesh);
-
     // TEXTURES
     fprintf(stdout, "WORLD: \t\tLoading textures...\n");
     texture_pool_allocate(6);
@@ -187,7 +185,7 @@ void world_update(World* world, Game* game, double delta) {
         world->life->step();
 
         mesh_delete(mcube_mesh);
-        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current, 10);
+        mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
     }
 
     quat q;

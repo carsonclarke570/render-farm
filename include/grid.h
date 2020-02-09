@@ -19,8 +19,10 @@
 #include <stdint.h>
 
 
+
+
 struct Grid {
-    uint8_t *cells;
+    uint8_t *m_cells;
     int x, y, z;
 
     /**
@@ -36,6 +38,11 @@ struct Grid {
      *  Destroys a Grid struct
      */
     ~Grid();
+	
+	/**
+	 * Converts the xyz indicies to a single index
+	 */
+	int index(int x, int y, int z);
 };
 
 
