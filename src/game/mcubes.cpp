@@ -65,9 +65,9 @@ Mesh* MarchingCubeGenerator::generate(Grid* grid) {
                         memcpy(v1.normal, norm, sizeof(vec3));
                         memcpy(v2.normal, norm, sizeof(vec3));
 						
-						vertices.push_back(v2);
-						vertices.push_back(v1);
 						vertices.push_back(v0);
+						vertices.push_back(v1);
+						vertices.push_back(v2);
 					}
 				}
 			}

@@ -18,7 +18,6 @@
 #include "mcubes.h"
 #include "simplex_noise.h"
 
-
 //#define CONWAY
 
 extern TexturePool texture_pool;
@@ -33,7 +32,7 @@ void world_init(World* world, Game* game) {
 	fprintf(stdout, "WORLD: \t\tGenerating world...\n");
 #ifdef CONWAY
     world->life = new GameOfLife(20, 20, 20);
-    world->life->populate(40);
+    world->life->populate(30);
     world->life->step();
 #else
     Grid* grid = new Grid(8, 8, 8);
