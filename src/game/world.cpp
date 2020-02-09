@@ -19,7 +19,7 @@
 #include "simplex_noise.h"
 
 
-#define CONWAY
+//#define CONWAY
 
 extern TexturePool texture_pool;
 Mesh* mcube_mesh;

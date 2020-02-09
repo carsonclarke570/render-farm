@@ -209,6 +209,6 @@ void simplex_noise(Grid *grid) {
 		
 		// Add contributions from each corner to get the final noise value.
 		// The result is scaled to stay just inside [-1,1]
-		grid->m_cells[c] = (32.0 * (n0 + n1 + n2 + n3)) > 0;
+		grid->m_cells[c] = (32.0 * (n0 + n1 + n2 + n3)) < -0.1;
 	}}}
 }
