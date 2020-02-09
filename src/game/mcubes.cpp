@@ -28,18 +28,18 @@ Mesh* MarchingCubeGenerator::generate(Grid* grid) {
 	int i, c = 0;
 	uint8_t index;
 	
-	for (c = 0, z = 0; z < grid->z - 1; z++) {
+	for (c = 0, x = 0; x < grid->x - 1; x++) {
 		for (y = 0; y < grid->y - 1; y++) {
-			for (x = 0; x < grid->x - 1; x++, c++) {
+			for (z = 0; z < grid->z - 1; z++, c++) {
 				index = 0;
-				if (grid->m_cells[c                              ]) index |= 1;
-				if (grid->m_cells[c + grid->x                    ]) index |= 2;
-				if (grid->m_cells[c + grid->x +           grid->z]) index |= 4;
-				if (grid->m_cells[c +                     grid->z]) index |= 8;
-				if (grid->m_cells[c +           grid->y          ]) index |= 16;
-				if (grid->m_cells[c + grid->x + grid->y          ]) index |= 32;
-				if (grid->m_cells[c + grid->x + grid->y + grid->z]) index |= 64;
-				if (grid->m_cells[c +           grid->y + grid->z]) index |= 128;
+				if (grid->m_cells[c                                    ]) index |= 1;
+				if (grid->m_cells[c + (grid->y * grid->z)              ]) index |= 2;
+				if (grid->m_cells[c + (grid->y * grid->z) +           1]) index |= 4;
+				if (grid->m_cells[c +                                 1]) index |= 8;
+				if (grid->m_cells[c +                       grid->z    ]) index |= 16;
+				if (grid->m_cells[c + (grid->y * grid->z) + grid->z    ]) index |= 32;
+				if (grid->m_cells[c + (grid->y * grid->z) + grid->z + 1]) index |= 64;
+				if (grid->m_cells[c +                       grid->z + 1]) index |= 128;
 				
 				if (MC_EDGE_TABLE[index]) {
 					for(i = 0; MC_TRI_TABLE[index][i] != -1; i += 3) {
@@ -77,7 +77,7 @@ Mesh* MarchingCubeGenerator::generate(Grid* grid) {
 		}
 		
 		// Skip last y column.
-		c += grid->x;
+		c += grid->z;
 	}
 	
 	mesh_create(mesh, vertices.data(), vertices.size(), nullptr, 0);

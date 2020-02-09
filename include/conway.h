@@ -32,7 +32,7 @@ private:
     Grid *m_next;
 
     int count_neigbors(int x, int y, int z);
-    int wrap_bounds(int x0, int y0, int z0, int *x1, int *y1, int *z1);
+    void wrap_bounds(int x0, int y0, int z0, int *x1, int *y1, int *z1);
 public:
     Grid *m_current;
     int x;

@@ -19,6 +19,9 @@
 #include "simplex_noise.h"
 
 
+#define CONWAY
+
+
 extern TexturePool texture_pool;
 Mesh* mcube_mesh; 
 uint16_t rule = (0 << 12) | (15 << 8) | (1 << 4) | 1;
@@ -30,17 +33,22 @@ void world_init(World* world, Game* game) {
 
     /* Marching Cubes */
 	fprintf(stdout, "WORLD: \t\tGenerating world...\n");
-    //Grid* grid = new Grid(8, 8, 8);
-	//simplex_noise(grid);
-	
-	fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
-    world->life = new GameOfLife(10, 10, 10);
-    world->life->populate(10);
+#ifdef CONWAY
+    world->life = new GameOfLife(20, 20, 20);
+    world->life->populate(40);
     world->life->step();
+#else
+    Grid* grid = new Grid(8, 8, 8);
+	simplex_noise(grid);
+#endif
 
+	fprintf(stdout, "WORLD: \t\tGenerating marching cubes...\n");
+#ifdef CONWAY
     mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
-	//mcube_mesh = MarchingCubeGenerator::generate(grid);
-	//delete grid;
+#else
+	mcube_mesh = MarchingCubeGenerator::generate(grid);
+	delete grid;
+#endif
     
     // TEXTURES
     fprintf(stdout, "WORLD: \t\tLoading textures...\n");
@@ -178,6 +186,7 @@ void world_update(World* world, Game* game, double delta) {
     float t = glfwGetTime();
     float s = sinf(t / 2.0f);
 
+#ifdef CONWAY
     life_time += delta;
     if (life_time >= 1.0f) {
         printf("%f ", life_time);
@@ -187,6 +196,7 @@ void world_update(World* world, Game* game, double delta) {
         mesh_delete(mcube_mesh);
         mcube_mesh = MarchingCubeGenerator::generate(world->life->m_current);
     }
+#endif
 
     quat q;
     vec3 axis = {0.0f, 1.0f, 0.0f};

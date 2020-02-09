@@ -87,7 +87,7 @@ int GameOfLife::count_neigbors(int x, int y, int z) {
 }
 
 
-int GameOfLife::wrap_bounds(int x0, int y0, int z0, int *x1, int *y1, int *z1) {
+void GameOfLife::wrap_bounds(int x0, int y0, int z0, int *x1, int *y1, int *z1) {
 	*x1 = x0 > 0 ? x0 < this->x ? x0 : this->x : 0;
 	*y1 = y0 > 0 ? y0 < this->y ? y0 : this->y : 0;
 	*z1 = z0 > 0 ? z0 < this->z ? z0 : this->z : 0;
