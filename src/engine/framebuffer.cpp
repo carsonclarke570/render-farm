@@ -45,6 +45,8 @@ void framebuffer_create(Framebuffer* buffer, Attachment* attachments, int n, ive
         glTexParameteri(a->target, GL_TEXTURE_MAG_FILTER, a->filter);
         if (a->target == GL_TEXTURE_CUBE_MAP) {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_CUBE_MAP_POSITIVE_X, buffer->textures[i], 0);
+        // } else if(a->format = GL_DEPTH_COMPONENT) {
+        //     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, a->target, buffer->textures[i], 0);
         } else {
             glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, a->target, buffer->textures[i], 0);
         }

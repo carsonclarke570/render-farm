@@ -119,6 +119,7 @@ void world_init(World* world, Game* game) {
     world->pbr_shader.uniform_int("buf_position", 0);
     world->pbr_shader.uniform_int("buf_normal", 1);
     world->pbr_shader.uniform_int("buf_albedo", 2);
+    //world->pbr_shader.uniform_int("buf_depth", 3);
     world->pbr_shader.unbind();
 
     /* Geometry Pass Configuration */
@@ -146,8 +147,8 @@ void world_init(World* world, Game* game) {
     world->sky_shader.unbind();
 
     /* Island Shader Configuration */
-    const vec3 top = {1.0f, 1.0f, 1.0f};
-    const vec3 bottom = {0.0f, 0.0f, 0.0f};
+    const vec3 top = {0.1f, 0.1f, 0.1f};
+    const vec3 bottom = {0.0f, 1.0f, 0.0f};
     world->island.bind();
     world->island.uniform_vec3("top_color", top);
     world->island.uniform_vec3("bottom_color", bottom);
@@ -158,11 +159,12 @@ void world_init(World* world, Game* game) {
     // Create Skybox
     cubemap_create(&world->sky_box);
 
-    /* PBR Framebuffer Creation */
+    /* G-buffer Creation */
     Attachment attachments[] = {
             {GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_TEXTURE_2D, GL_NEAREST},      // Position + metallic
             {GL_RGBA16F, GL_RGBA, GL_FLOAT, GL_TEXTURE_2D, GL_NEAREST},      // Normal + roughness
-            {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_TEXTURE_2D, GL_NEAREST}    // Color
+            {GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, GL_TEXTURE_2D, GL_NEAREST},  // Color
+            //{GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_UNSIGNED_INT, GL_TEXTURE_2D, GL_LINEAR}
     };
     ivec2  size;
     size[0] = WIN_WIDTH;
@@ -243,11 +245,11 @@ void world_scene(World* world) {
     bind_texture(&texture_pool.textures[1], 6);
     bind_texture(&texture_pool.textures[2], 7);
 
-    Shader::push(&world->island);
+    //Shader::push(&world->island);
     transform_to_matrix(&world->cube_t, mat);
     uniform_buffer_store(&world->mvp_mat, 0, sizeof(mat4), mat);
     mesh_render(mcube_mesh);
-    Shader::pop();
+    //Shader::pop();
 }
 
 void world_geometry_pass(World* world) {
@@ -259,7 +261,7 @@ void world_geometry_pass(World* world) {
     get_view(&world->camera, view);
     uniform_buffer_store(&world->mvp_mat, sizeof(mat4), sizeof(mat4), view);
 
-    Shader::push(&world->geometry);
+    Shader::push(&world->island);
     world_scene(world);
     Shader::pop();
 

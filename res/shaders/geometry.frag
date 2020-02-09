@@ -37,5 +37,7 @@ void main() {
     buf_normal.rgb = get_normal().xyz;
     buf_normal.a = texture(texture_specular, fs_in.texcoord).r;
     buf_albedo.rgb = texture(texture_diffuse, fs_in.texcoord).rgb;
+
+    //gl_FragDepth = gl_FragCoord.z;
 }
 
