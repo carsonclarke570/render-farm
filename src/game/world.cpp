@@ -22,7 +22,7 @@
 #define CONWAY
 
 extern TexturePool texture_pool;
-Mesh* mcube_mesh
+Mesh* mcube_mesh;
 double life_time = 0.0f;
 
 
