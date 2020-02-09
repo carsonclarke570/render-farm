@@ -21,10 +21,8 @@
 
 #define CONWAY
 
-
 extern TexturePool texture_pool;
-Mesh* mcube_mesh; 
-uint16_t rule = (0 << 12) | (15 << 8) | (1 << 4) | 1;
+Mesh* mcube_mesh
 double life_time = 0.0f;
 
 
@@ -189,7 +187,7 @@ void world_update(World* world, Game* game, double delta) {
 #ifdef CONWAY
     life_time += delta;
     if (life_time >= 1.0f) {
-        printf("%f ", life_time);
+        //printf("%f ", life_time);
         life_time -= 1.0f;
         world->life->step();
 
