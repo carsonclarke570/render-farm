@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Carson Clarke-Magrab
+    Copyright 2020 Carson Clarke-Magrab
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,8 +13,27 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
-//
-// Created by birdi on 6/21/2019.
-//
+#include "grid.h"
 
-#include "factory.h"
+
+Grid::Grid(int x, int y, int z) {
+    this->m_cells = new uint8_t[x * y * z];
+    this->x = x;
+    this->y = y;
+    this->z = z;
+}
+
+
+Grid::~Grid() {
+    delete[] this->m_cells;
+    this->x = 0;
+    this->y = 0;
+    this->z = 0;
+}
+
+
+int Grid::index(int x, int y, int z) {
+	return (x * this->y * this->z) + (y * this->z) + z;
+}
+
+

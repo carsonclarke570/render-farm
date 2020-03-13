@@ -91,7 +91,7 @@ int engine_run(Game* game) {
         glfwPollEvents();
 
         // Binds the exit key
-        if (glfwGetKey(game->m_window->window, KEY_BIND_QUIT) == GLFW_PRESS)
+        if (glfwGetKey(game->m_window->window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
             glfwSetWindowShouldClose(game->m_window->window, true);
     }
     game->cleanup();

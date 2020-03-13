@@ -77,10 +77,11 @@ void cubemap_delete(CubeMap *box) {
 }
 
 void cubemap_render(CubeMap *box, Shader *shader) {
-    shader_bind(shader);
+    Shader::push(shader);
     glDepthFunc(GL_LEQUAL);
     glBindVertexArray(box->vao);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
+    Shader::pop();
 }

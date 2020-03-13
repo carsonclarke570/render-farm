@@ -1,5 +1,5 @@
 /*
-    Copyright 2019 Carson Clarke-Magrab
+    Copyright 2020 Carson Clarke-Magrab
 
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
@@ -13,25 +13,39 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+#ifndef GRID_H
+#define GRID_H
 
-#ifndef MARCHING_CUBES_H
-#define MARCHING_CUBES_H
-
-#include "mesh.h"
-#include "grid.h"
+#include <stdint.h>
 
 
-class MarchingCubeGenerator {
-public:
+
+
+struct Grid {
+    uint8_t *m_cells;
+    int x, y, z;
+
     /**
-     *  Uses the marching cube algorithm to convert a three-dimensional array
-     *  of boolean cells into a mesh.
+     *  Constructs a new Grid struct
      * 
-     *  @params cells   A Grid object defining a three-dimensional array of cells.
-     * 
-     *  @return A newly allocated mesh object generated from marching cubes.
+     *  @param x   Size of the x dimension
+     *  @param y   Size of the y dimension
+     *  @param z   Size of the z dimension
      */
-    static Mesh* generate(Grid* cells);
+    Grid(int x, int y, int z);
+
+    /**
+     *  Destroys a Grid struct
+     */
+    ~Grid();
+	
+	/**
+	 * Converts the xyz indicies to a single index
+	 */
+	int index(int x, int y, int z);
 };
 
+
 #endif
+
+
