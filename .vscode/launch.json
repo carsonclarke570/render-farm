@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cppdbg",
+            "request": "launch",
+            "name": "Run Program",
+            "program": "${workspaceRoot}/build/Windows/Daybreak.exe",
+            "cwd": "${workspaceRoot}/build/Windows/"
+        }
+    ]
+}

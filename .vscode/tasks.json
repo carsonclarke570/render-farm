@@ -1,0 +1,33 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build cmake-opengl",
+            "command": "cmake",
+            "args": [
+                "-B", "build/Windows",
+                "-G", "MinGW Makefiles",
+                ".",
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        },
+        {
+            "label": "build make-opengl",
+            "command": "c:/MinGW/bin/mingw32-make.exe",
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/build/Windows"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+        }
+    ]
+}
